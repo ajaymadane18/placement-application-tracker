@@ -2,6 +2,7 @@ package placement_tracker.backend.Controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import placement_tracker.backend.Model.Login;
 import placement_tracker.backend.Model.Register;
 import placement_tracker.backend.Services.HomeService;
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class HomeContoller {
 	@Autowired
 	private HomeService hs;  
