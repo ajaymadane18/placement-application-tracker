@@ -2,8 +2,10 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+     const navigate = useNavigate();
     const [register, Setregister] = useState({});
     const [errors, setErrors] = useState({});
 
@@ -52,10 +54,15 @@ const Register = () => {
             (response) => {
                 console.log(response);
                 console.log("success");
+                alert("Registration successful")
+                 setTimeout(() => {
+        navigate("/login");
+      }, 1500);
             },
             (error) => {
                 console.log(error);
                 console.log("error");
+                alert("Something went wrong")
             }
         );
     };

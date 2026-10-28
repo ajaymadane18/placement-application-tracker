@@ -37,9 +37,6 @@ export default function Navbar() {
             Home
           </Link>
 
-          <Link to="/dashboard" className={linkStyle("/dashboard")}>
-            Dashboard
-          </Link>
 
           <Link to="/register" className={linkStyle("/register")}>
             Register

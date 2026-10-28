@@ -15,6 +15,13 @@ public class Register {
     @Column(unique = true, nullable = false)
     private String email;
     private String password;
+    private String confirmpassword;
+	public String getConfirmpassword() {
+		return confirmpassword;
+	}
+	public void setConfirmpassword(String confirmpassword) {
+		this.confirmpassword = confirmpassword;
+	}
 	public long getId() {
 		return id;
 	}
@@ -41,8 +48,10 @@ public class Register {
 	}
 	@Override
 	public String toString() {
-		return "Register [id=" + id + ", fullname=" + fullname + ", email=" + email + ", password=" + password + "]";
+		return "Register [id=" + id + ", fullname=" + fullname + ", email=" + email + ", password=" + password
+				+ ", confirmpassword=" + confirmpassword + "]";
 	}
+	
     
     
 }
