@@ -32,14 +32,21 @@ export default function Login() {
   const checkLogin = (data) => {
     axios.post("http://localhost:8080/CheckLogin", data).then(
       (response) => {
-        alert("Login successful");
-
-        setTimeout(() => {
+       if(response.data=="invalid Email"){
+        alert("invalid email ")
+        
+       }else if(response.data=="login successful"){
+        alert("login successful")
+ setTimeout(() => {
           navigate("/dashboard");
         }, 1500);
+       }else if(response.data=="Wrong password"){
+         alert("Wrong password")
+       }
+
       },
       (error) => {
-        alert("Invalid email or password");
+        alert("Server down");
         console.log(error);
       }
     );

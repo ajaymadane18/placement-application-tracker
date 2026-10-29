@@ -1,11 +1,16 @@
 
-import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import { Link, useNavigate } from "react-router-dom";
+import DashboardNavbar from "../Components/DashboardNavbar";
+
 
 export default function Dashboard() {
+     const navigate=useNavigate()
+       const fun=()=>{
+        navigate("/addApplication")
+       }
   return (
     <>
-      <Navbar />
+    <DashboardNavbar/>
 
       <main className="min-h-screen bg-slate-50 p-6 md:p-10">
         <div className="mx-auto max-w-6xl">
@@ -21,19 +26,13 @@ export default function Dashboard() {
 
             <button
               className="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
-              onClick={() => alert("Add Application feature coming next!")}
+              onClick={fun}
             >
               + Add Application
             </button>
           </div>
 
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard title="Total Applications" count="0" />
-            <StatCard title="Applied" count="0" />
-            <StatCard title="Interviews" count="0" />
-            <StatCard title="Offers" count="0" />
-          </div>
-
+        
           <section className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-bold text-gray-900">
               Recent Applications
@@ -73,11 +72,4 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ title, count }) {
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="mt-3 text-3xl font-bold text-gray-900">{count}</p>
-    </div>
-  );
-}
+
