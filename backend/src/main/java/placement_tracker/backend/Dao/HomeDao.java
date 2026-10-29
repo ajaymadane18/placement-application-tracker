@@ -21,7 +21,7 @@ public class HomeDao implements HomeService {
 		// TODO Auto-generated method stub
 		   Register r= hr.findByEmail(l.getEmail()).orElse(null);
 		   System.out.println("dao"+r);
-		   if(r.getPassword().equals(l.getPassword())) {
+		   if(r!=null ) {
 			   return r;
 		   }else {
 			   return null;
