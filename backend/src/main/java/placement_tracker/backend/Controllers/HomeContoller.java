@@ -27,10 +27,13 @@ public class HomeContoller {
 	public String login(@RequestBody Login l) {
 		  Register r1= hs.login(l);
 		  System.out.println("controller"+l);
-		 if(r1!=null) {
+		  System.out.println(r1);
+		 if(r1!=null && r1.getPassword().equals(l.getPassword())==false) {
+			 return "Wrong password";
+		 }else if(r1!=null && r1.getPassword().equals(l.getPassword())==true){
 			 return "login successful";
 		 }else {
-			 return "login failed";
+			 return "invalid Email";
 		 }
 	}
 }
