@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 @Entity
 public class Register {
@@ -15,6 +16,7 @@ public class Register {
     @Column(unique = true, nullable = false)
     private String email;
     private String password;
+    @Transient
     private String confirmpassword;
 	public String getConfirmpassword() {
 		return confirmpassword;

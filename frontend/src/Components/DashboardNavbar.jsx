@@ -10,9 +10,16 @@ export default function DashboardNavbar() {
         : "text-blue-100 hover:bg-white/10 hover:text-white"
     }`;
 
-  const handleLogout = () => {
+const handleLogout = () => {
+    console.log("Logout clicked");
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+
+    console.log("Token after logout:", localStorage.getItem("token"));
+
     navigate("/login");
-  };
+};
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 shadow-lg">

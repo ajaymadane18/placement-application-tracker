@@ -8,18 +8,25 @@ import Login from "./pages/Login";
 import Statistics from "./pages/Statistics";
 import Profile from "./pages/Profile";
 import AddApplication from "./pages/AddApplication";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/statistics" element={<Statistics/>}/>
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/addApplication" element={<AddApplication/>}/>
+
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/statistics" element={<Statistics />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/addApplication" element={<AddApplication />} />
+        </Route>
+
       </Routes>
     </BrowserRouter>
   );

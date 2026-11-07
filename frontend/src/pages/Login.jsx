@@ -29,28 +29,31 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const checkLogin = (data) => {
-    axios.post("http://localhost:8080/CheckLogin", data).then(
-      (response) => {
-       if(response.data=="invalid Email"){
-        alert("invalid email ")
-        
-       }else if(response.data=="login successful"){
-        alert("login successful")
- setTimeout(() => {
+const checkLogin = (data) => {
+  axios.post("http://localhost:8080/CheckLogin", data).then(
+    (response) => {
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("email", response.data.email);
+
+        alert("Login successful");
+
+        setTimeout(() => {
           navigate("/dashboard");
         }, 1500);
-       }else if(response.data=="Wrong password"){
-         alert("Wrong password")
-       }
 
-      },
-      (error) => {
-        alert("Server down");
-        console.log(error);
+      } else {
+        alert(response.data.message);
       }
-    );
-  };
+
+    },
+    (error) => {
+      alert("Server down");
+      console.log(error);
+    }
+  );
+};
 
   const handleform = (e) => {
     e.preventDefault();
