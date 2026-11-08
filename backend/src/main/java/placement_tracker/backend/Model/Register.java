@@ -11,7 +11,7 @@ import jakarta.persistence.Transient;
 public class Register {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long register_id;
     private String fullname;
     @Column(unique = true, nullable = false)
     private String email;
@@ -25,10 +25,10 @@ public class Register {
 		this.confirmpassword = confirmpassword;
 	}
 	public long getId() {
-		return id;
+		return register_id;
 	}
 	public void setId(long id) {
-		this.id = id;
+		this.register_id = id;
 	}
 	public String getFullname() {
 		return fullname;
@@ -50,7 +50,7 @@ public class Register {
 	}
 	@Override
 	public String toString() {
-		return "Register [id=" + id + ", fullname=" + fullname + ", email=" + email + ", password=" + password
+		return "Register [id=" + register_id + ", fullname=" + fullname + ", email=" + email + ", password=" + password
 				+ ", confirmpassword=" + confirmpassword + "]";
 	}
 	

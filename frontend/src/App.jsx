@@ -9,6 +9,7 @@ import Statistics from "./pages/Statistics";
 import Profile from "./pages/Profile";
 import AddApplication from "./pages/AddApplication";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import UpdateProfile from "./pages/UpdateProfile";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/statistics" element={<Statistics />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/addApplication" element={<AddApplication />} />
+          <Route path="/updateProfile" element={<UpdateProfile />} />
         </Route>
 
       </Routes>
