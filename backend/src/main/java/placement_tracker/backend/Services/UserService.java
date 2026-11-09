@@ -1,7 +1,10 @@
 package placement_tracker.backend.Services;
 
+import java.util.List;
+
 import placement_tracker.backend.Model.Application;
 
 public interface UserService {
-    public void addApplication(Application application);
+    public Application addApplication(Application application,String email);
+    public List<Application> getAllApplication(String email);
 }
