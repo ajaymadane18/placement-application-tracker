@@ -1,55 +1,193 @@
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const location = useLocation();
 
-  const linkStyle = (path) =>
-    `rounded-lg px-4 py-2 text-sm font-medium transition duration-200 ${
-      location.pathname === path
-        ? "bg-white/20 text-white"
-        : "text-blue-100 hover:bg-white/10 hover:text-white"
-    }`;
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  const [profile, setProfile] = useState({});
+  const [accountOpen, setAccountOpen] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    setIsLoggedIn(!!token);
+
+    if (token) {
+      axios.get("http://localhost:8080/api/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((response) => {
+        setProfile(response.data);
+      })
+      .catch((error) => {
+        console.log("Unable to fetch profile", error);
+      });
+    } else {
+      setProfile({});
+    }
+  }, [location.pathname]);
+
+  const handleSectionClick = (sectionId) => {
+    if (location.pathname !== "/") {
+      navigate("/", { state: { scrollTo: sectionId } });
+    } else {
+      document.getElementById(sectionId)?.scrollIntoView({
+        behavior: "smooth"
+      });
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+
+    setIsLoggedIn(false);
+    setProfile({});
+    setAccountOpen(false);
+
+    navigate("/");
+  };
+
+  const fullname =
+    profile?.register?.fullname || profile?.fullname || "User";
+
+  const email =
+    profile?.register?.email ||
+    profile?.email ||
+    localStorage.getItem("email") ||
+    "";
+
+  const navLink =
+    "cursor-pointer text-sm font-medium text-slate-600 transition hover:text-blue-700";
 
   return (
-    <nav className="bg-gradient-to-r from-slate-950 via-blue-950 to-indigo-900 text-white shadow-lg">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
 
-        {/* Brand */}
-        <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-xl font-extrabold text-blue-800 shadow-md">
-            P
-          </div>
-
-          <div>
-            <h1 className="text-xl font-bold tracking-wide">
-              Placement<span className="text-cyan-300">Tracker</span>
-            </h1>
-            <p className="text-xs text-blue-200">
-              Your career, organized.
-            </p>
-          </div>
+        <Link to="/" className="shrink-0 text-xl font-extrabold text-blue-700">
+          Placement<span className="text-slate-800">Tracker</span>
         </Link>
 
-        {/* Navigation links */}
-        <div className="flex items-center gap-2">
-          <Link to="/" className={linkStyle("/")}>
-            Home
-          </Link>
+        <div className="hidden items-center gap-6 lg:flex">
+          <Link to="/" className={navLink}>Home</Link>
 
+          <button onClick={() => handleSectionClick("features")} className={navLink}>
+            Features
+          </button>
 
-          <Link to="/register" className={linkStyle("/register")}>
-            Register
-          </Link>
+          <button onClick={() => handleSectionClick("how-it-works")} className={navLink}>
+            How It Works
+          </button>
 
-          <Link
-            to="/login"
-            className="ml-2 rounded-lg bg-cyan-400 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-md transition duration-200 hover:bg-cyan-300 hover:shadow-lg"
-          >
-            Login →
-          </Link>
+          <button onClick={() => handleSectionClick("upcoming")} className={navLink}>
+            What's Coming
+          </button>
+
+          <button onClick={() => handleSectionClick("faq")} className={navLink}>
+            FAQ
+          </button>
         </div>
 
+        <div className="flex shrink-0 items-center gap-2">
+
+          {isLoggedIn ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+              >
+                Dashboard
+              </Link>
+
+              {/* User Account */}
+              <div className="relative">
+                <button
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  className="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-2 hover:bg-slate-50"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700">
+                    {fullname.charAt(0).toUpperCase()}
+                  </div>
+
+                  <div className="hidden text-left sm:block">
+                    <p className="text-sm font-semibold text-slate-800">
+                      {fullname}
+                    </p>
+                    <p className="max-w-36 truncate text-xs text-slate-500">
+                      {email}
+                    </p>
+                  </div>
+
+                  <span className="text-xs text-slate-500">▼</span>
+                </button>
+
+                {accountOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+
+                    <div className="border-b border-slate-100 pb-3">
+                      <p className="font-semibold text-slate-800">
+                        {fullname}
+                      </p>
+                      <p className="break-all text-sm text-slate-500">
+                        {email}
+                      </p>
+                    </div>
+
+                    <Link
+                      to="/profile"
+                      onClick={() => setAccountOpen(false)}
+                      className="mt-2 block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-blue-50"
+                    >
+                      View Profile
+                    </Link>
+
+                    <Link
+                      to="/updateProfile"
+                      onClick={() => setAccountOpen(false)}
+                      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-blue-50"
+                    >
+                      Edit Profile
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className="mt-2 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50"
+                    >
+                      Logout
+                    </button>
+
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+              >
+                Login
+              </Link>
+
+              <Link
+                to="/register"
+                className="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
+
+        </div>
       </div>
     </nav>
   );
