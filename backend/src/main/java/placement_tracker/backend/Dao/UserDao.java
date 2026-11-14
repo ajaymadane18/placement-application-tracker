@@ -29,6 +29,29 @@ public class UserDao implements UserService{
 		 Register register= homeDao.findByEmail(email);
 		return userRepo.findByRegister(register) ;
 	}
+	@Override
+	public void deleteApplication(Long id) {
+		// TODO Auto-generated method stub
+		userRepo.deleteById(id);
+		
+	}
+	@Override
+	public void updateApplication(Application updatedApplication, Long id) {
+		// TODO Auto-generated method stub
+	     Application application= userRepo.findById(id).orElseThrow(()-> new RuntimeException("Application not found"));
+	      application.setApplicationLink(updatedApplication.getApplicationLink());
+	      application.setApplicationStatus(updatedApplication.getApplicationStatus());
+	      application.setCompanyName(updatedApplication.getCompanyName());
+	      application.setDate(updatedApplication.getDate());
+	      application.setJobDescription(updatedApplication.getJobDescription());
+	      application.setJobRole(updatedApplication.getJobRole());
+	      application.setJobType(updatedApplication.getJobType());
+	      application.setLocation(updatedApplication.getLocation());
+	      
+	       userRepo.save(application);
+	      
+	}
+
 	
 
 }

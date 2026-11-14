@@ -9,4 +9,6 @@ import placement_tracker.backend.Model.Register;
 
 public interface UserRepo extends JpaRepository<Application, Long>{
 	List<Application> findByRegister(Register register);
+
+	
 }

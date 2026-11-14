@@ -5,12 +5,17 @@ import Navbar from "../Components/Navbar";
 import axios from "axios";
 
 export default function Dashboard() {
+  const [editingApplication, setEditingApplication] = useState(null);
+const [updating, setUpdating] = useState(false);
+const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
+    
   const fun = () => {
     navigate("/addApplication");
   };
@@ -90,6 +95,113 @@ export default function Dashboard() {
       return "bg-yellow-100 text-yellow-700";
     }
   };
+// Open edit form
+const handleEdit = (app) => {
+  setEditingApplication({ ...app });
+};
+
+// Handle input changes
+const handleEditChange = (e) => {
+  const { name, value } = e.target;
+
+  setEditingApplication((prev) => ({
+    ...prev,
+    [name]: value
+  }));
+};
+
+// Update application
+const handleUpdate = async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+
+  try {
+    setUpdating(true);
+
+    await axios.put(
+      `http://localhost:8080/updateApplication/${editingApplication.application_id}`,
+      editingApplication,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setApplications((prev) =>
+      prev.map((app) =>
+        app.application_id === editingApplication.application_id
+          ? editingApplication
+          : app
+      )
+    );
+
+    setEditingApplication(null);
+
+    alert("Application updated successfully!");
+
+  } catch (error) {
+    console.log("Update failed:", error);
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("email");
+      navigate("/login");
+    } else {
+      alert("Unable to update application.");
+    }
+
+  } finally {
+    setUpdating(false);
+  }
+};
+// Delete application
+const handleDelete = async (id) => {
+
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this application?"
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+
+  try {
+    setDeletingId(id);
+
+    await axios.delete(
+      `http://localhost:8080/deleteApplication/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setApplications((prev) =>
+      prev.filter((app) => app.application_id !== id)
+    );
+
+    alert("Application deleted successfully!");
+
+  } catch (error) {
+    console.log("Delete failed:", error);
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("email");
+      navigate("/login");
+    } else {
+      alert("Unable to delete application.");
+    }
+
+  } finally {
+    setDeletingId(null);
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -261,6 +373,8 @@ export default function Dashboard() {
                       <th className="px-4 py-4">Status</th>
                       <th className="px-4 py-4">Application Link</th>
                       <th className="px-4 py-4">Job Description</th>
+                       <th className="px-4 py-4">Action</th>
+                      
                     </tr>
                   </thead>
 
@@ -318,6 +432,26 @@ export default function Dashboard() {
                         <td className="max-w-xs px-4 py-4 text-sm text-slate-600">
                           {app.jobDescription || "N/A"}
                         </td>
+                       <td className="px-4 py-4">
+  <div className="flex items-center gap-2">
+
+    <button
+      onClick={() => handleEdit(app)}
+      className="rounded-lg bg-blue-100 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-200"
+    >
+      Edit
+    </button>
+
+    <button
+      onClick={() => handleDelete(app.application_id)}
+      disabled={deletingId === app.application_id}
+      className="rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-200 disabled:opacity-50"
+    >
+      {deletingId === app.application_id ? "Deleting..." : "Delete"}
+    </button>
+
+  </div>
+</td>
                       </tr>
                     ))}
                   </tbody>
@@ -409,6 +543,160 @@ export default function Dashboard() {
           </div>
 
         </div>
+        {editingApplication && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+
+    <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
+
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-slate-900">
+          Edit Application
+        </h2>
+
+        <button
+          onClick={() => setEditingApplication(null)}
+          className="text-2xl text-slate-500 hover:text-red-600"
+        >
+          &times;
+        </button>
+      </div>
+
+      <form onSubmit={handleUpdate} className="grid gap-5 sm:grid-cols-2">
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Company Name
+          </label>
+          <input
+            type="text"
+            name="companyName"
+            value={editingApplication.companyName || ""}
+            onChange={handleEditChange}
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Job Role
+          </label>
+          <input
+            type="text"
+            name="jobRole"
+            value={editingApplication.jobRole || ""}
+            onChange={handleEditChange}
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Date
+          </label>
+          <input
+            type="text"
+            name="date"
+            value={editingApplication.date || ""}
+            onChange={handleEditChange}
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Location
+          </label>
+          <input
+            type="text"
+            name="location"
+            value={editingApplication.location || ""}
+            onChange={handleEditChange}
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Job Type
+          </label>
+          <input
+            type="text"
+            name="jobType"
+            value={editingApplication.jobType || ""}
+            onChange={handleEditChange}
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Application Status
+          </label>
+          <select
+            name="applicationStatus"
+            value={editingApplication.applicationStatus || ""}
+            onChange={handleEditChange}
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+          >
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Selected">Selected</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="mb-2 block text-sm font-semibold">
+            Application Link
+          </label>
+          <input
+            type="text"
+            name="applicationLink"
+            value={editingApplication.applicationLink || ""}
+            onChange={handleEditChange}
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="mb-2 block text-sm font-semibold">
+            Job Description
+          </label>
+          <textarea
+            name="jobDescription"
+            value={editingApplication.jobDescription || ""}
+            onChange={handleEditChange}
+            rows="4"
+            className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-600"
+          />
+        </div>
+
+        <div className="flex justify-end gap-3 sm:col-span-2">
+
+          <button
+            type="button"
+            onClick={() => setEditingApplication(null)}
+            className="rounded-lg border border-slate-300 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-100"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={updating}
+            className="rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+          >
+            {updating ? "Updating..." : "Update Application"}
+          </button>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
       </main>
     </div>
   );

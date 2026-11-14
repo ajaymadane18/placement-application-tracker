@@ -11,30 +11,31 @@ export default function Navbar() {
     !!localStorage.getItem("token")
   );
 
-  const [profile, setProfile] = useState({});
+ const [profile, setProfile] = useState(null);
   const [accountOpen, setAccountOpen] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+useEffect(() => {
+  const token = localStorage.getItem("token");
 
-    setIsLoggedIn(!!token);
+  setIsLoggedIn(!!token);
 
-    if (token) {
-      axios.get("http://localhost:8080/api/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((response) => {
-        setProfile(response.data);
-      })
-      .catch((error) => {
-        console.log("Unable to fetch profile", error);
-      });
-    } else {
-      setProfile({});
-    }
-  }, [location.pathname]);
+  if (token) {
+    axios.get("http://localhost:8080/api/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then((response) => {
+      setProfile(response.data);
+    })
+    .catch((error) => {
+      console.log("Unable to fetch profile", error);
+      setProfile(null);
+    });
+  } else {
+    setProfile(null);
+  }
+}, [location.pathname]);
 
   const handleSectionClick = (sectionId) => {
     if (location.pathname !== "/") {
